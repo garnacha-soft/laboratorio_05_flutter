@@ -10,17 +10,24 @@ import '../models_sqlite/FavHelper.dart';
 
 import 'package:toast/toast.dart';
 
+import 'package:temp_05_x/observers.dart';
+
 class PetsList extends StatefulWidget{
   @override
   createState() => PetsListState();
 }
 
-class PetsListState extends State<PetsList> {
+class PetsListState extends State<PetsList> implements StateListener{
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =  GlobalKey<RefreshIndicatorState>();
 
   final dbHelper = FavHelper();
   //creamos una variable para guardar una lista de amigos
   List<Pet> _pets = List<Pet>();
+
+  PetsListState(){
+    var stateProvider = new StateProvider();
+    stateProvider.subscribe(this);
+  }
 
   @override
   void initState() {
@@ -57,6 +64,7 @@ class PetsListState extends State<PetsList> {
         onRefresh: getPets,
         key: _refreshIndicatorKey,
         child: ListView.builder(//creamos un Listview Builder
+          physics: AlwaysScrollableScrollPhysics(),
           itemCount: _pets.length,//pasamos la longitud del array list
           itemBuilder: _buildItemsForListView,//llamamos la función que hará la iteración
         ),
@@ -145,5 +153,12 @@ class PetsListState extends State<PetsList> {
         duration: Toast.LENGTH_SHORT,
         gravity:  Toast.BOTTOM);
     });
+  }
+
+  @override
+  void onStateChanged(ObserverState state) {
+    if (state == ObserverState.LIST_UPDATED) {
+      getPets();
+    }
   }
 }

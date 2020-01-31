@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:temp_05_x/observers.dart';
 import '../routes/AddPetPage.dart';
 import '../routes/EditPetPage.dart';//importamos Añadir amigo
 import '../models_api/Pet.dart';//importamos el mdoelo Pet.dart+
@@ -275,6 +276,9 @@ class AdminPageState extends State<AdminPage>{
       }
 
       //si todo sale bien.
+      StateProvider _stateProvider = StateProvider();
+      _stateProvider.notify(ObserverState.LIST_UPDATED);
+
       setState(() {
         //eliminamos el elemento de la vista
         _pets.removeAt(position);
