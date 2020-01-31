@@ -16,6 +16,8 @@ class PetsList extends StatefulWidget{
 }
 
 class PetsListState extends State<PetsList> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =  GlobalKey<RefreshIndicatorState>();
+
   final dbHelper = FavHelper();
   //creamos una variable para guardar una lista de amigos
   List<Pet> _pets = List<Pet>();
@@ -51,10 +53,14 @@ class PetsListState extends State<PetsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(//regresamos un Scaffold de contenedor
-      body: ListView.builder(//creamos un Listview Builder
-        itemCount: _pets.length,//pasamos la longitud del array list
-        itemBuilder: _buildItemsForListView,//llamamos la función que hará la iteración
-      ),
+      body: RefreshIndicator(
+        onRefresh: getPets,
+        key: _refreshIndicatorKey,
+        child: ListView.builder(//creamos un Listview Builder
+          itemCount: _pets.length,//pasamos la longitud del array list
+          itemBuilder: _buildItemsForListView,//llamamos la función que hará la iteración
+        ),
+      )
     );
   }
 
@@ -70,7 +76,19 @@ class PetsListState extends State<PetsList> {
         children: <Widget>[//array
           Container (//contenedor de imagen
             padding: EdgeInsets.all(10.0),//padding
-            child: Image.network(_pets[index].image),//imagen interna
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  alignment: Alignment(0, 0),
+                  child: CircularProgressIndicator()
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Image.network(_pets[index].image),
+                ),
+              ],
+            ),//imagen interna
           ),
           Container (//contenedor de texto
             padding: EdgeInsets.all(10.0),//padding
